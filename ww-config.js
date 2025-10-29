@@ -153,6 +153,7 @@ export default {
                 'mappingAttachmentUrl',
                 'mappingAttachmentType',
                 'mappingAttachmentSize',
+                'mappingAttachmentPath',
             ],
             ['streamingTitle', 'isStreaming', 'streamingText'],
         ],
