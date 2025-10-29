@@ -282,6 +282,7 @@ export default {
                             url: mapAttachmentField(att, props.content?.mappingAttachmentUrl, 'url'),
                             type: mapAttachmentField(att, props.content?.mappingAttachmentType, 'type'),
                             size: mapAttachmentField(att, props.content?.mappingAttachmentSize, 'size'),
+                            path: mapAttachmentField(att, props.content?.mappingAttachmentPath, 'path'),
                             // Preserve local upload File if present
                             file: att.file,
                         };
@@ -499,6 +500,7 @@ export default {
                 type: file.type,
                 size: file.size,
                 url: URL.createObjectURL(file),
+                path: null, // Will be set when file is uploaded to Supabase
                 file,
             }));
 

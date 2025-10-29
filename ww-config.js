@@ -228,6 +228,7 @@ export default {
                     type: 'application/pdf',
                     size: 1024000,
                     url: 'https://example.com/document.pdf',
+                    path: 'bucket-name/folder/document.pdf',
                 },
             },
         },
@@ -239,6 +240,7 @@ export default {
                     name: 'image.png',
                     type: 'image/png',
                     size: 204800,
+                    path: 'bucket-name/image.png',
                 },
                 index: 0,
             },
@@ -1683,6 +1685,29 @@ export default {
             propertyHelp: {
                 tooltip:
                     'Mapping to the size in your **Attachments** data.\n\n**Example mapping:** `context.mapping?.["size"]`\n\n**Example value:** `204800`',
+            },
+            /* wwEditor:end */
+            hidden: (content, _, boundProps) => {
+                const hasMessages = !!boundProps?.messages;
+                const hasAttachmentsMapping = !!content?.mappingAttachments?.code;
+                return !(hasMessages && hasAttachmentsMapping);
+            },
+        },
+        mappingAttachmentPath: {
+            label: { en: 'Path (file location)' },
+            type: 'Formula',
+            options: content => {
+                const messages = Array.isArray(content.messages) ? content.messages : [];
+                const mapping = content?.mappingAttachments;
+                return { template: __pickFirstAttachmentByMapping(messages, mapping) };
+            },
+            defaultValue: { type: 'f', code: "context.mapping?.['path']" },
+            section: 'settings',
+            /* wwEditor:start */
+            bindingValidation: { type: 'formula', tooltip: 'Formula that returns the attachment path/location (e.g., Supabase bucket path)' },
+            propertyHelp: {
+                tooltip:
+                    'Mapping to the file path/location in your **Attachments** data (e.g., Supabase storage path).\n\n**Example mapping:** `context.mapping?.["path"]`\n\n**Example value:** `bucket-name/folder/document.pdf`',
             },
             /* wwEditor:end */
             hidden: (content, _, boundProps) => {
