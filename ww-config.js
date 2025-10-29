@@ -156,6 +156,14 @@ export default {
                 'mappingAttachmentPath',
             ],
             ['streamingTitle', 'isStreaming', 'streamingText'],
+            [
+                'localizationTitle',
+                'locale',
+                'todayText',
+                'yesterdayText',
+                'justNowText',
+                'timeFormat',
+            ],
         ],
     },
     triggerEvents: [
@@ -1748,6 +1756,159 @@ export default {
             propertyHelp: {
                 tooltip:
                     'Live content being streamed from your AI API while **Is Streaming** is **`true`**.\n\nExample: **`…`**, **`Typing…`**, **`The answer is…`**',
+            },
+            /* wwEditor:end */
+        },
+
+        // Localization & Dates
+        localizationTitle: {
+            type: 'Title',
+            label: { en: 'Localization & Dates' },
+            section: 'settings',
+        },
+        locale: {
+            label: { en: 'Language / Locale' },
+            type: 'TextSelect',
+            section: 'settings',
+            options: {
+                options: [
+                    // English variants
+                    { value: 'enUS', label: 'English (United States)' },
+                    { value: 'enGB', label: 'English (United Kingdom)' },
+                    { value: 'enCA', label: 'English (Canada)' },
+                    { value: 'enAU', label: 'English (Australia)' },
+                    { value: 'enNZ', label: 'English (New Zealand)' },
+                    { value: 'enIE', label: 'English (Ireland)' },
+                    { value: 'enIN', label: 'English (India)' },
+                    { value: 'enZA', label: 'English (South Africa)' },
+                    // French variants
+                    { value: 'fr', label: 'Français (France)' },
+                    { value: 'frCA', label: 'Français (Canada)' },
+                    { value: 'frCH', label: 'Français (Switzerland)' },
+                    // German variants
+                    { value: 'de', label: 'Deutsch (Germany)' },
+                    { value: 'deAT', label: 'Deutsch (Austria)' },
+                    // Spanish
+                    { value: 'es', label: 'Español' },
+                    // Italian variants
+                    { value: 'it', label: 'Italiano (Italy)' },
+                    { value: 'itCH', label: 'Italiano (Switzerland)' },
+                    // Portuguese variants
+                    { value: 'pt', label: 'Português (Portugal)' },
+                    { value: 'ptBR', label: 'Português (Brazil)' },
+                    // Russian
+                    { value: 'ru', label: 'Русский' },
+                    // East Asian languages
+                    { value: 'ja', label: '日本語' },
+                    { value: 'jaHira', label: '日本語 (Hiragana)' },
+                    { value: 'zh', label: '中文 (Simplified)' },
+                    { value: 'zhHK', label: '中文 (Hong Kong)' },
+                    { value: 'zhTW', label: '中文 (Traditional)' },
+                    { value: 'ko', label: '한국어' },
+                    // Arabic variants
+                    { value: 'ar', label: 'العربية' },
+                    { value: 'arDZ', label: 'العربية (Algeria)' },
+                    { value: 'arEG', label: 'العربية (Egypt)' },
+                    { value: 'arMA', label: 'العربية (Morocco)' },
+                    { value: 'arSA', label: 'العربية (Saudi Arabia)' },
+                    { value: 'arTN', label: 'العربية (Tunisia)' },
+                    // Indian subcontinent languages
+                    { value: 'hi', label: 'हिन्दी' },
+                    { value: 'bn', label: 'বাংলা' },
+                    // Other European
+                    { value: 'nl', label: 'Nederlands (Netherlands)' },
+                    { value: 'nlBE', label: 'Nederlands (Belgium)' },
+                    { value: 'sv', label: 'Svenska' },
+                    { value: 'nb', label: 'Norsk (Bokmål)' },
+                    { value: 'nn', label: 'Norsk (Nynorsk)' },
+                    { value: 'da', label: 'Dansk' },
+                    { value: 'fi', label: 'Suomi' },
+                    { value: 'el', label: 'Ελληνικά' },
+                    { value: 'tr', label: 'Türkçe' },
+                    { value: 'cs', label: 'Čeština' },
+                    { value: 'pl', label: 'Polski' },
+                    { value: 'ro', label: 'Română' },
+                    { value: 'hu', label: 'Magyar' },
+                    // Southeast Asian
+                    { value: 'vi', label: 'Tiếng Việt' },
+                    { value: 'th', label: 'ไทย' },
+                    { value: 'id', label: 'Bahasa Indonesia' },
+                    { value: 'ms', label: 'Bahasa Melayu' },
+                    // Other
+                    { value: 'uk', label: 'Українська' },
+                ],
+            },
+            defaultValue: 'enUS',
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Language/locale code' },
+            propertyHelp: {
+                tooltip:
+                    'Select the locale for date and time formatting.\n\nThis affects how dates like "Today", "Yesterday" and relative times are displayed.',
+            },
+            /* wwEditor:end */
+        },
+        todayText: {
+            label: { en: 'Today Text' },
+            type: 'Text',
+            section: 'settings',
+            bindable: true,
+            defaultValue: 'Today',
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Text displayed for today\'s date' },
+            propertyHelp: {
+                tooltip:
+                    'Custom text to display when a message is from today.\n\n**Default:** `Today`\n\n**Example:** `Aujourd\'hui` (French)',
+            },
+            /* wwEditor:end */
+        },
+        yesterdayText: {
+            label: { en: 'Yesterday Text' },
+            type: 'Text',
+            section: 'settings',
+            bindable: true,
+            defaultValue: 'Yesterday',
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Text displayed for yesterday\'s date' },
+            propertyHelp: {
+                tooltip:
+                    'Custom text to display when a message is from yesterday.\n\n**Default:** `Yesterday`\n\n**Example:** `Hier` (French)',
+            },
+            /* wwEditor:end */
+        },
+        justNowText: {
+            label: { en: '"Just Now" Text' },
+            type: 'Text',
+            section: 'settings',
+            bindable: true,
+            defaultValue: 'just now',
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Text displayed for very recent messages' },
+            propertyHelp: {
+                tooltip:
+                    'Custom text to display when a message was sent moments ago.\n\n**Default:** `just now`\n\n**Example:** `à l\'instant` (French)',
+            },
+            /* wwEditor:end */
+        },
+        timeFormat: {
+            label: { en: 'Time Format' },
+            type: 'TextSelect',
+            section: 'settings',
+            options: {
+                options: [
+                    { value: 'h:mm a', label: '12-hour (09:30)' },
+                    { value: 'HH:mm', label: '24-hour (09:30)' },
+                    { value: 'h:mm:ss a', label: '12-hour with seconds (09:30:45)' },
+                    { value: 'HH:mm:ss', label: '24-hour with seconds (09:30:45)' },
+                ],
+            },
+            defaultValue: 'h:mm a',
+            bindable: true,
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Time format pattern' },
+            propertyHelp: {
+                tooltip:
+                    'Select the time format for displaying message timestamps.\n\n**12-hour:** Uses AM/PM (e.g., 3:30 PM)\n\n**24-hour:** Uses military time (e.g., 15:30)',
             },
             /* wwEditor:end */
         },
