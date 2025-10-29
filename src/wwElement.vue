@@ -177,7 +177,6 @@ export default {
         const messagesContainer = ref(null);
         const newMessage = ref('');
         const isScrolling = ref(false);
-        const pendingAttachments = ref([]);
 
         const debounce = (func, delay) => {
             let timeoutId;
@@ -195,6 +194,13 @@ export default {
                 messages: [],
                 utils: { messageCount: 0, isDisabled: false },
             },
+        });
+
+        const { value: pendingAttachments, setValue: setPendingAttachments } = wwLib.wwVariable.useComponentVariable({
+            uid: props.uid,
+            name: 'pendingAttachments',
+            type: 'array',
+            defaultValue: [],
         });
 
         const { resolveMappingFormula } = wwLib.wwFormula.useFormula();
@@ -453,7 +459,7 @@ export default {
             };
 
             newMessage.value = '';
-            pendingAttachments.value = [];
+            setPendingAttachments([]);
 
             emit('trigger-event', {
                 name: 'messageSent',
@@ -496,7 +502,7 @@ export default {
                 file,
             }));
 
-            pendingAttachments.value = [...pendingAttachments.value, ...attachmentFiles];
+            setPendingAttachments([...pendingAttachments.value, ...attachmentFiles]);
         };
 
         const handleRemoveAttachment = index => {
@@ -507,7 +513,8 @@ export default {
                 URL.revokeObjectURL(pendingAttachments.value[index].url);
             }
 
-            pendingAttachments.value.splice(index, 1);
+            const newAttachments = pendingAttachments.value.filter((_, i) => i !== index);
+            setPendingAttachments(newAttachments);
         };
 
         const handleAttachmentClick = attachment => {
