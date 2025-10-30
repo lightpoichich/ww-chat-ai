@@ -1,5 +1,10 @@
 <template>
     <div class="ww-chat-input-area">
+        <!-- Error message for rejected files -->
+        <div v-if="rejectionError" class="ww-chat-input-area__error-message">
+            {{ rejectionError }}
+        </div>
+
         <!-- Pending Attachments Display -->
         <div v-if="pendingAttachments.length > 0" class="ww-chat-input-area__attachments">
             <div
@@ -250,6 +255,7 @@ export default {
         const sendIconText = ref(null);
         const attachmentIconText = ref(null);
         const removeIconText = ref(null);
+        const rejectionError = ref(null);
 
         const { getIcon } = wwLib.useIcons();
 
@@ -455,18 +461,32 @@ export default {
 
             const files = event.target.files;
             if (files && files.length > 0) {
+                const allFiles = Array.from(files);
                 // Filter files based on allowed types
-                const validFiles = Array.from(files).filter(isFileTypeAllowed);
+                const validFiles = allFiles.filter(isFileTypeAllowed);
+                const rejectedFiles = allFiles.filter(file => !isFileTypeAllowed(file));
+
+                // Show error if any files were rejected
+                if (rejectedFiles.length > 0) {
+                    const rejectedNames = rejectedFiles.map(f => f.name).join(', ');
+                    rejectionError.value = `File(s) rejected: ${rejectedNames}. Only ${props.allowedAttachmentTypes || 'specified types'} are allowed.`;
+
+                    // Auto-dismiss error after 5 seconds
+                    setTimeout(() => {
+                        rejectionError.value = null;
+                    }, 5000);
+                }
 
                 if (validFiles.length === 0) {
-                    console.warn('No files matched the allowed file types');
                     event.target.value = '';
                     return;
                 }
 
                 // For single mode, only pass the first file
                 if (props.attachmentMode === 'single') {
-                    emit('attachment', new DataTransfer().items.add(validFiles[0]).files);
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(validFiles[0]);
+                    emit('attachment', dataTransfer.files);
                 } else {
                     // For multiple mode, pass all valid files
                     const dataTransfer = new DataTransfer();
@@ -506,6 +526,7 @@ export default {
                 inputValue,
                 canSend,
                 isUiDisabled,
+                rejectionError,
                 sendIconHtml,
                 attachmentIconHtml,
                 removeIconHtml,
@@ -554,6 +575,17 @@ export default {
     background-color: v-bind('inputBgColor');
     position: relative;
     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.06);
+
+    &__error-message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        background-color: #fee;
+        border-left: 4px solid #f87171;
+        color: #991b1b;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        animation: slideDown 0.3s ease-out;
+    }
 
     &__input-row {
         display: flex;
@@ -815,6 +847,17 @@ export default {
             color: #94a3b8;
             box-shadow: none;
         }
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>
