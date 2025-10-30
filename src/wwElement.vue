@@ -44,6 +44,7 @@
             :allow-attachments="allowAttachments"
             :attachment-mode="attachmentMode"
             :allowed-attachment-types="allowedAttachmentTypes"
+            :attachment-error-message="attachmentErrorMessage"
             :pending-attachments="pendingAttachments"
             :input-bg-color="inputBgColor"
             :input-text-color="inputTextColor"
@@ -311,6 +312,7 @@ export default {
         const allowAttachments = computed(() => props.content?.allowAttachments || false);
         const attachmentMode = computed(() => props.content?.attachmentMode || 'multiple');
         const allowedAttachmentTypes = computed(() => props.content?.allowedAttachmentTypes || '');
+        const attachmentErrorMessage = computed(() => props.content?.attachmentErrorMessage || 'File(s) rejected: {files}. Only {types} are allowed.');
         const enableMarkdown = computed(() => props.content?.enableMarkdown || false);
         const inputPlaceholder = computed(() => props.content?.inputPlaceholder || 'Message...');
 
@@ -740,6 +742,7 @@ export default {
             isDisabled,
             attachmentMode,
             allowedAttachmentTypes,
+            attachmentErrorMessage,
             inputPlaceholder,
             enableMarkdown,
             userLabel,

@@ -15,9 +15,14 @@ AI-focused chat UI with ChatGPT-style design: transparent assistant messages, us
 - userLabel: string – Label for user messages. Example: 'You'
 - assistantLabel: string – Label for AI assistant messages. Example: 'Assistant'
 - disabled: boolean – Disable input/actions. Example: false
-- allowAttachments: boolean – Enable file attachments (for vision models, document analysis). Example: false
 - enableMarkdown: boolean – Enable markdown rendering with syntax highlighting. When false, uses white-space: pre-line to respect \n. Example: false
 - autoScrollBehavior: 'auto'|'smooth' – Scroll mode for new messages. Example: 'auto'
+
+**Attachment Settings:**
+- allowAttachments: boolean – Enable file attachments (for vision models, document analysis). Example: false
+- attachmentMode: 'single'|'multiple' – Allow single file or multiple files per upload. Example: 'multiple'
+- allowedAttachmentTypes: string – Comma-separated MIME types or extensions to allow. Supports wildcards (image/*), MIME types (image/png), and extensions (.pdf). Empty = all types allowed. Example: 'image/*,.pdf'
+- attachmentErrorMessage: string – Custom error message for rejected files. Template variables: {files} (rejected file names), {types} (allowed types). Example: '⚠️ {files} cannot be uploaded. Allowed: {types}'
 
 **Chat Data:**
 - messages: array – Conversation data with role-based messages. Example: [{ content: 'Hello', role: 'user', timestamp: '2025-01-15T10:30:00Z' }]
@@ -31,6 +36,14 @@ AI-focused chat UI with ChatGPT-style design: transparent assistant messages, us
 - mappingAttachmentUrl: Formula – Extract attachment URL field. Default: context.mapping?.['url']
 - mappingAttachmentType: Formula – Extract attachment MIME type. Default: context.mapping?.['type']
 - mappingAttachmentSize: Formula – Extract attachment size in bytes. Default: context.mapping?.['size']
+- mappingAttachmentPath: Formula – Extract attachment file path/location (e.g., Supabase bucket path). Default: context.mapping?.['path']
+
+**Localization & Dates:**
+- locale: 'enUS'|'fr'|'de'|'es'|'ja'|'zh'|'ko'|... – Language for date/time formatting. Supports 50+ languages including English, French, German, Spanish, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Arabic, Hindi, Bengali, Dutch, Swedish, Norwegian, Danish, Finnish, Greek, Turkish, Czech, Polish, Romanian, Hungarian, Vietnamese, Thai, Indonesian, Malay, Ukrainian. Example: 'enUS'
+- todayText: string – Custom text for today's messages. Example: 'Today' (French: 'Aujourd\'hui')
+- yesterdayText: string – Custom text for yesterday's messages. Example: 'Yesterday' (French: 'Hier')
+- justNowText: string – Custom text for very recent messages. Example: 'just now' (French: 'à l\'instant')
+- timeFormat: 'h:mm a'|'HH:mm'|'h:mm:ss a'|'HH:mm:ss' – Time format for message timestamps. Example: 'h:mm a' (12-hour), 'HH:mm' (24-hour)
 
 **Streaming (Critical for AI Response Display):**
 - isStreaming: boolean – **REQUIRED** Set to true while AI is generating response, false when complete. Controls visibility of streaming message bubble. Example: false
@@ -141,11 +154,12 @@ On messageSent event:
 
 ***Exposed Variables:***
 - chatState: ***READ ONLY*** Contains messages array and utils object. (path: variables['current_element_uid-chatState'])
+- pendingAttachments: Array of files awaiting upload. Each item contains: { id, name, type, size, url (blob), path, file }. Use to show attachment preview or count before sending. (path: variables['current_element_uid-pendingAttachments'])
 
 ***Events:***
 - messageSent: Triggered when the user sends a message. Payload: { message: { id, content, role: 'user', timestamp, attachments?: File[] } }
 - messageReceived: Triggered when a new assistant message is detected. Payload: { message: { id, content, role: 'assistant', timestamp, attachments? } }
-- attachmentClick: Triggered when user clicks an attachment in a message. Payload: { attachment: { id, name, url, type, size } }
+- attachmentClick: Triggered when user clicks an attachment in a message. Payload: { attachment: { id, name, url, type, size, path } }
 - pendingAttachmentClick: Triggered when user clicks a pending attachment before sending. Payload: { attachment: File, index }
 - messageRightClick: Triggered when user right-clicks a message. Payload: { message, position: { elementX, elementY, viewportX, viewportY } }
 
@@ -156,6 +170,10 @@ On messageSent event:
 ***Notes:***
 - **Role-based system**: Messages use `role` property with values 'user' or 'assistant' (not participants)
 - **ChatGPT-style by default**: Assistant messages have transparent background and no border; user messages have bubble style
+- **File Type Restrictions**: Use `allowedAttachmentTypes` to restrict uploads (e.g., 'image/*' for images only, '.pdf' for PDFs, 'image/*,.pdf' for mixed). Rejected files show a customizable error message via `attachmentErrorMessage`.
+- **Attachment Modes**: `attachmentMode` can be 'single' (replaces previous) or 'multiple' (allows multiple per message).
+- **Localization**: Use `locale` to set language for date/time display. Customize text with `todayText`, `yesterdayText`, `justNowText`. Choose time format with `timeFormat`.
+- **File Paths**: Use `mappingAttachmentPath` to extract file storage paths from messages (useful for Supabase, S3, or other cloud storage integrations).
 - **Streaming support (CRITICAL)**:
   - **ALWAYS** bind both `isStreaming` AND `streamingText` properties when implementing AI chat
   - `isStreaming` controls whether a temporary streaming bubble appears (set to `true` during generation, `false` when done)

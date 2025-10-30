@@ -139,6 +139,7 @@ export default {
                 'allowAttachments',
                 'attachmentMode',
                 'allowedAttachmentTypes',
+                'attachmentErrorMessage',
                 'autoScrollBehavior',
             ],
             [
@@ -1451,6 +1452,20 @@ export default {
             propertyHelp: {
                 tooltip:
                     'Leave empty to allow all file types. Otherwise, specify allowed types as comma-separated MIME types or file extensions.\n\n**Examples:**\n- `image/*` - All image types\n- `image/png,image/jpeg` - PNG and JPEG only\n- `.pdf,.doc,.docx` - PDF and Word documents\n- `image/*,.pdf,.xlsx` - Images, PDF, and Excel files\n- `audio/*,video/*` - Audio and video files\n\n**Common MIME types:**\n- Images: `image/png`, `image/jpeg`, `image/gif`, `image/webp`\n- PDF: `application/pdf`\n- Documents: `application/msword`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`\n- Spreadsheets: `application/vnd.ms-excel`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`',
+            },
+            /* wwEditor:end */
+        },
+        attachmentErrorMessage: {
+            label: { en: 'Attachment Error Message' },
+            type: 'Text',
+            section: 'settings',
+            bindable: true,
+            defaultValue: 'File(s) rejected: {files}. Only {types} are allowed.',
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Custom error message for rejected files' },
+            propertyHelp: {
+                tooltip:
+                    'Customize the error message shown when files are rejected due to type restrictions.\n\n**Template variables:**\n- `{files}` - Replaced with comma-separated list of rejected file names\n- `{types}` - Replaced with the allowed file types\n\n**Examples:**\n- `File(s) rejected: {files}. Only {types} are allowed.`\n- `Sorry, {files} is not supported. Please use: {types}`\n- `⚠️ {files} cannot be uploaded. Allowed: {types}`\n- `Invalid file type(s): {files}. Accepted formats: {types}`',
             },
             /* wwEditor:end */
         },

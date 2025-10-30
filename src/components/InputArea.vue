@@ -243,6 +243,10 @@ export default {
             type: String,
             default: '',
         },
+        attachmentErrorMessage: {
+            type: String,
+            default: 'File(s) rejected: {files}. Only {types} are allowed.',
+        },
     },
     emits: ['update:modelValue', 'send', 'attachment', 'remove-attachment', 'pending-attachment-click'],
     setup(props, { emit }) {
@@ -469,7 +473,12 @@ export default {
                 // Show error if any files were rejected
                 if (rejectedFiles.length > 0) {
                     const rejectedNames = rejectedFiles.map(f => f.name).join(', ');
-                    rejectionError.value = `File(s) rejected: ${rejectedNames}. Only ${props.allowedAttachmentTypes || 'specified types'} are allowed.`;
+                    const allowedTypes = props.allowedAttachmentTypes || 'specified types';
+
+                    // Replace template variables in custom error message
+                    rejectionError.value = props.attachmentErrorMessage
+                        .replace('{files}', rejectedNames)
+                        .replace('{types}', allowedTypes);
 
                     // Auto-dismiss error after 5 seconds
                     setTimeout(() => {
