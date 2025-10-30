@@ -42,6 +42,8 @@
             v-model="newMessage"
             :is-disabled="isDisabled"
             :allow-attachments="allowAttachments"
+            :attachment-mode="attachmentMode"
+            :allowed-attachment-types="allowedAttachmentTypes"
             :pending-attachments="pendingAttachments"
             :input-bg-color="inputBgColor"
             :input-text-color="inputTextColor"
@@ -307,6 +309,8 @@ export default {
 
         const isDisabled = computed(() => props.content?.disabled || false);
         const allowAttachments = computed(() => props.content?.allowAttachments || false);
+        const attachmentMode = computed(() => props.content?.attachmentMode || 'multiple');
+        const allowedAttachmentTypes = computed(() => props.content?.allowedAttachmentTypes || '');
         const enableMarkdown = computed(() => props.content?.enableMarkdown || false);
         const inputPlaceholder = computed(() => props.content?.inputPlaceholder || 'Message...');
 
@@ -734,6 +738,8 @@ export default {
             newMessage,
             messages,
             isDisabled,
+            attachmentMode,
+            allowedAttachmentTypes,
             inputPlaceholder,
             enableMarkdown,
             userLabel,

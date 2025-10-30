@@ -60,9 +60,10 @@
                 <input
                     type="file"
                     class="ww-chat-input-area__attachment-input"
-                    multiple
+                    :multiple="attachmentMode === 'multiple'"
                     @change="handleAttachment"
                     :disabled="isUiDisabled"
+                    :accept="acceptedFileTypes"
                 />
                 <span
                     class="ww-chat-input-area__icon"
@@ -228,6 +229,15 @@ export default {
             type: String,
             default: '16px',
         },
+        // Attachment options
+        attachmentMode: {
+            type: String,
+            default: 'multiple',
+        },
+        allowedAttachmentTypes: {
+            type: String,
+            default: '',
+        },
     },
     emits: ['update:modelValue', 'send', 'attachment', 'remove-attachment', 'pending-attachment-click'],
     setup(props, { emit }) {
@@ -362,6 +372,21 @@ export default {
             boxShadow: props.attachmentButtonBoxShadow,
         }));
 
+        const acceptedFileTypes = computed(() => {
+            if (!props.allowedAttachmentTypes) return '';
+
+            const types = props.allowedAttachmentTypes
+                .split(',')
+                .map(type => type.trim())
+                .filter(type => type);
+
+            // Filter out extensions (starting with .) as HTML accept attribute uses MIME types
+            // Extensions will be checked in the validation logic
+            return types
+                .filter(type => !type.startsWith('.'))
+                .join(',');
+        });
+
         watch(
             () => props.modelValue,
             newValue => {
@@ -394,12 +419,61 @@ export default {
             inputValue.value = '';
         };
 
+        const isFileTypeAllowed = file => {
+            if (!props.allowedAttachmentTypes) return true;
+
+            const allowedTypes = props.allowedAttachmentTypes
+                .split(',')
+                .map(type => type.trim())
+                .filter(type => type);
+
+            if (allowedTypes.length === 0) return true;
+
+            for (const allowed of allowedTypes) {
+                // Handle wildcard MIME types (e.g., "image/*")
+                if (allowed.includes('*')) {
+                    const [baseMime] = allowed.split('/');
+                    const [fileMime] = file.type.split('/');
+                    if (baseMime === fileMime) return true;
+                }
+                // Handle exact MIME type match
+                else if (allowed.startsWith('.')) {
+                    // Handle file extension (e.g., ".pdf")
+                    const fileName = file.name.toLowerCase();
+                    if (fileName.endsWith(allowed.toLowerCase())) return true;
+                } else {
+                    // Handle exact MIME type
+                    if (file.type === allowed) return true;
+                }
+            }
+
+            return false;
+        };
+
         const handleAttachment = event => {
             if (isEditing.value || props.isDisabled) return;
 
             const files = event.target.files;
             if (files && files.length > 0) {
-                emit('attachment', files);
+                // Filter files based on allowed types
+                const validFiles = Array.from(files).filter(isFileTypeAllowed);
+
+                if (validFiles.length === 0) {
+                    console.warn('No files matched the allowed file types');
+                    event.target.value = '';
+                    return;
+                }
+
+                // For single mode, only pass the first file
+                if (props.attachmentMode === 'single') {
+                    emit('attachment', new DataTransfer().items.add(validFiles[0]).files);
+                } else {
+                    // For multiple mode, pass all valid files
+                    const dataTransfer = new DataTransfer();
+                    validFiles.forEach(file => dataTransfer.items.add(file));
+                    emit('attachment', dataTransfer.files);
+                }
+
                 event.target.value = '';
             }
         };

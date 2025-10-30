@@ -137,6 +137,8 @@ export default {
                 'disabled',
                 'enableMarkdown',
                 'allowAttachments',
+                'attachmentMode',
+                'allowedAttachmentTypes',
                 'autoScrollBehavior',
             ],
             [
@@ -1414,6 +1416,41 @@ export default {
             /* wwEditor:start */
             propertyHelp: {
                 tooltip: 'Enable file attachments in the input area.\n\nPossible values: **`true`**, **`false`**',
+            },
+            /* wwEditor:end */
+        },
+        attachmentMode: {
+            label: { en: 'Attachment Mode' },
+            type: 'TextSelect',
+            section: 'settings',
+            options: {
+                options: [
+                    { value: 'single', label: 'Single File' },
+                    { value: 'multiple', label: 'Multiple Files' },
+                ],
+            },
+            defaultValue: 'multiple',
+            bindable: true,
+            hidden: content => !content?.allowAttachments,
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Allow single or multiple attachments' },
+            propertyHelp: {
+                tooltip:
+                    'Control whether users can attach one file or multiple files.\n\n**Single File:** Only one attachment can be added at a time. Selecting a new file replaces the previous one.\n\n**Multiple Files:** Users can add multiple attachments to a single message.',
+            },
+            /* wwEditor:end */
+        },
+        allowedAttachmentTypes: {
+            label: { en: 'Allowed File Types' },
+            type: 'Text',
+            section: 'settings',
+            bindable: true,
+            defaultValue: '', // Empty = all types allowed
+            /* wwEditor:start */
+            bindingValidation: { type: 'string', tooltip: 'Comma-separated MIME types or file extensions' },
+            propertyHelp: {
+                tooltip:
+                    'Leave empty to allow all file types. Otherwise, specify allowed types as comma-separated MIME types or file extensions.\n\n**Examples:**\n- `image/*` - All image types\n- `image/png,image/jpeg` - PNG and JPEG only\n- `.pdf,.doc,.docx` - PDF and Word documents\n- `image/*,.pdf,.xlsx` - Images, PDF, and Excel files\n- `audio/*,video/*` - Audio and video files\n\n**Common MIME types:**\n- Images: `image/png`, `image/jpeg`, `image/gif`, `image/webp`\n- PDF: `application/pdf`\n- Documents: `application/msword`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`\n- Spreadsheets: `application/vnd.ms-excel`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`',
             },
             /* wwEditor:end */
         },
