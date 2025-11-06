@@ -47,6 +47,17 @@
             </div>
         </div>
 
+        <!-- Typing indicator (when streaming but no text yet) -->
+        <div v-if="isStreaming && !streamingText" class="ww-message-list__typing-indicator">
+            <div class="typing-indicator-bubble" :style="typingIndicatorStyle">
+                <div class="typing-indicator-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
         <!-- Streaming message -->
         <div v-if="isStreaming && streamingText" class="ww-message-list__streaming">
             <message-item
@@ -231,6 +242,12 @@ export default {
             '--date-separator-border-radius': props.dateSeparatorBorderRadius,
         }));
 
+        const typingIndicatorStyle = computed(() => ({
+            backgroundColor: props.messageBgColor,
+            border: props.messageBorder,
+            borderRadius: props.messageRadius,
+        }));
+
         const groupedMessages = computed(() => {
             if (!props.messages || props.messages.length === 0) return [];
 
@@ -332,6 +349,7 @@ export default {
             handleRightClick,
             emptyMessageStyle,
             dateSeparatorStyle,
+            typingIndicatorStyle,
             dateTimeOptions,
         };
     },
@@ -378,6 +396,74 @@ export default {
             background-color: var(--date-separator-bg-color, #ffffff);
             border-radius: var(--date-separator-border-radius, 4px);
         }
+    }
+}
+
+// Typing indicator styles
+.ww-message-list__typing-indicator {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.typing-indicator-bubble {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    min-width: 60px;
+    max-width: 80px;
+}
+
+.typing-indicator-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    span {
+        display: block;
+        width: 8px;
+        height: 8px;
+        background-color: #94a3b8;
+        border-radius: 50%;
+        animation: typingDot 1.4s infinite ease-in-out;
+
+        &:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        &:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+    }
+}
+
+@keyframes typingDot {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
